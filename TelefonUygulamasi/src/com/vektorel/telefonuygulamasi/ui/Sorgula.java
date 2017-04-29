@@ -1,13 +1,23 @@
 package com.vektorel.telefonuygulamasi.ui;
 
-import java.awt.BorderLayout;
-import java.awt.EventQueue;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 import javax.swing.text.MaskFormatter;
+
+import com.vektorel.telefonuygulamasi.dao.DAO;
+import com.vektorel.telefonuygulamasi.entity.Person;
+import com.vektorel.telefonuygulamasi.entity.SorgulaEntity;
+import com.vektorel.telefonuygulamasi.enums.GorusmeTipi;
+
+import javax.swing.ButtonGroup;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JLabel;
@@ -23,29 +33,19 @@ import java.awt.event.ActionEvent;
 public class Sorgula extends JFrame {
 
 	private JPanel contentPane;
-	private JTextField textField;
+	private JTextField adSoyadTF;
 	private JTable table;
+	private JFormattedTextField basTarihTF;
+	private JFormattedTextField bitisTarTF;
+	private JRadioButton tlfRD;
+	private JRadioButton yuzYuzeRD;
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					Sorgula frame = new Sorgula();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+
 
 	/**
 	 * Create the frame.
 	 */
-	public Sorgula() {
+	public Sorgula(DAO dao) {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 403, 301);
 		contentPane = new JPanel();
@@ -54,27 +54,57 @@ public class Sorgula extends JFrame {
 		
 		JLabel lblNewLabel = new JLabel("Ba\u015F. Tarihi");
 		
-		JFormattedTextField formattedTextField = new JFormattedTextField(createFormat("##-##-####"));
+		basTarihTF = new JFormattedTextField(createFormat("##-##-####"));
 		
 		JLabel lblBitiTarihi = new JLabel("Biti\u015F Tarihi");
 		
-		JFormattedTextField formattedTextField_1 = new JFormattedTextField(createFormat("##-##-####"));
+		bitisTarTF = new JFormattedTextField(createFormat("##-##-####"));
 		
 		JLabel lblAdSoyad = new JLabel("Ad Soyad");
 		
-		textField = new JTextField();
-		textField.setColumns(10);
+		adSoyadTF = new JTextField();
+		adSoyadTF.setColumns(10);
 		
-		JRadioButton rdbtnNewRadioButton = new JRadioButton("Telefon");
+		ButtonGroup bG = new ButtonGroup();
 		
-		JRadioButton rdbtnNewRadioButton_1 = new JRadioButton("Y\u00FCz Y\u00FCze");
+		tlfRD = new JRadioButton(GorusmeTipi.TELEFON.getValue());
+		tlfRD.setSelected(true);
+		
+		yuzYuzeRD = new JRadioButton(GorusmeTipi.YUZ_YUZE.getValue());
+		
+		bG.add(tlfRD);
+		bG.add(yuzYuzeRD);
 		
 		table = new JTable();
+		
 		
 		JButton btnSorgula = new JButton("Sorgula");
 		btnSorgula.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				//veritabaný baglan ve goster
+				SorgulaEntity sorgulaEntity = new SorgulaEntity();
+				
+				sorgulaEntity.setAdSoyad(adSoyadTF.getText());
+				sorgulaEntity.setBasTarihi(basTarihTF.getText());
+				sorgulaEntity.setBitisTarihi(bitisTarTF.getText());
+				
+				if(tlfRD.isSelected()){
+					sorgulaEntity.setType(GorusmeTipi.TELEFON.getId());
+				}else if(yuzYuzeRD.isSelected()){
+					sorgulaEntity.setType(GorusmeTipi.YUZ_YUZE.getId());
+				}
+				
+				List<Person> myList = dao.sorgula(sorgulaEntity);
+				
+				String[] columns = {"id","isim Soyad","Mesaj","Telefon"};
+				String[][] rows = new String[myList.size()][4];
+				for (int i = 0; i < myList.size(); i++) {
+					rows[i][0]= String.valueOf(myList.get(i).getId());
+					rows[i][1]= myList.get(i).getAdSoyad();
+					rows[i][2]= myList.get(i).getMesaj();
+					rows[i][3]= myList.get(i).getTelefon();
+				}
+				TableModel dataModel = new DefaultTableModel(rows, columns);
+				table.setModel(dataModel);
 			}
 		});
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
@@ -91,16 +121,16 @@ public class Sorgula extends JFrame {
 							.addGap(24)
 							.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
 								.addGroup(gl_contentPane.createSequentialGroup()
-									.addComponent(formattedTextField, GroupLayout.PREFERRED_SIZE, 92, GroupLayout.PREFERRED_SIZE)
+									.addComponent(basTarihTF, GroupLayout.PREFERRED_SIZE, 92, GroupLayout.PREFERRED_SIZE)
 									.addGap(18)
 									.addComponent(lblBitiTarihi)
 									.addGap(18)
-									.addComponent(formattedTextField_1, GroupLayout.PREFERRED_SIZE, 93, GroupLayout.PREFERRED_SIZE))
-								.addComponent(textField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
+									.addComponent(bitisTarTF, GroupLayout.PREFERRED_SIZE, 93, GroupLayout.PREFERRED_SIZE))
+								.addComponent(adSoyadTF, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
 						.addGroup(Alignment.LEADING, gl_contentPane.createSequentialGroup()
-							.addComponent(rdbtnNewRadioButton)
+							.addComponent(tlfRD)
 							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addComponent(rdbtnNewRadioButton_1)
+							.addComponent(yuzYuzeRD)
 							.addGap(67)
 							.addComponent(btnSorgula)))
 					.addContainerGap(79, Short.MAX_VALUE))
@@ -111,17 +141,17 @@ public class Sorgula extends JFrame {
 					.addContainerGap()
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
 						.addComponent(lblNewLabel)
-						.addComponent(formattedTextField, GroupLayout.PREFERRED_SIZE, 21, GroupLayout.PREFERRED_SIZE)
+						.addComponent(basTarihTF, GroupLayout.PREFERRED_SIZE, 21, GroupLayout.PREFERRED_SIZE)
 						.addComponent(lblBitiTarihi)
-						.addComponent(formattedTextField_1, GroupLayout.PREFERRED_SIZE, 21, GroupLayout.PREFERRED_SIZE))
+						.addComponent(bitisTarTF, GroupLayout.PREFERRED_SIZE, 21, GroupLayout.PREFERRED_SIZE))
 					.addGap(32)
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
 						.addComponent(lblAdSoyad)
-						.addComponent(textField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+						.addComponent(adSoyadTF, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 					.addGap(18)
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
-						.addComponent(rdbtnNewRadioButton)
-						.addComponent(rdbtnNewRadioButton_1)
+						.addComponent(tlfRD)
+						.addComponent(yuzYuzeRD)
 						.addComponent(btnSorgula))
 					.addGap(18)
 					.addComponent(table, GroupLayout.PREFERRED_SIZE, 97, GroupLayout.PREFERRED_SIZE)

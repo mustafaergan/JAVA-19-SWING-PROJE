@@ -17,6 +17,8 @@ import java.awt.event.ActionEvent;
 public class Main extends JFrame {
 	DAO dao = new DAO();
 	GenelGorusme genelGorusmeFrame = new GenelGorusme(dao);
+	Sorgula sorgulaFrame = new Sorgula(dao);
+
 
 
 	private JPanel contentPane;
@@ -59,7 +61,7 @@ public class Main extends JFrame {
 		JButton btnNewButton_1 = new JButton("Arama");
 		btnNewButton_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				//Arama Ekranýna
+				sorgulaFrame.setVisible(true);
 			}
 		});
 		contentPane.add(btnNewButton_1, BorderLayout.CENTER);
