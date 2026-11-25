@@ -1,0 +1,34 @@
+# Maven
+target/
+
+# Eclipse / STS
+.classpath
+.project
+.settings/
+.factorypath
+.springBeans
+.sts4-cache/
+.metadata/
+RemoteSystemsTempFiles/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# VS Code
+.vscode/
+
+# Derleme çıktısı ve günlükler
+*.class
+*.log
+hs_err_pid*
+
+# Ortam değişkenleri
+.env
+
+# İşletim sistemi
+.DS_Store
+Thumbs.db
