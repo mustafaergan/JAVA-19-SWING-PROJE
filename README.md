@@ -26,7 +26,7 @@ Proje `TelefonUygulamasi/` klasöründedir.
 
 - Java 8 (Swing)
 - Hibernate 5.1.0
-- MySQL (mysql-connector-java 5.1.9)
+- MySQL (mysql-connector-java 5.1.49)
 - Maven (kaynak klasörü standart dışı: `src/`)
 
 ## Çalıştırma
